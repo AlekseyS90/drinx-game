@@ -1,99 +1,81 @@
+const container = document.getElementById("game-container");
 const player = document.getElementById("player");
-const gameContainer = document.getElementById("game-container");
-const scoreLabel = document.getElementById("score");
-const finishScreen = document.getElementById("finish");
-const finalScoreText = document.getElementById("final-score");
+const scoreDisplay = document.getElementById("score");
+const finish = document.getElementById("finish");
+const finalScore = document.getElementById("final-score");
 
 let score = 0;
-let isGameOver = false;
+let gameRunning = true;
+let playerX = window.innerWidth / 2 - 45;
 
-Telegram.WebApp.ready();
-
-function movePlayer(x) {
-  const rect = gameContainer.getBoundingClientRect();
-  const playerWidth = player.offsetWidth;
-  let newX = x - playerWidth / 2;
-
-  if (newX < 0) newX = 0;
-  if (newX > rect.width - playerWidth) newX = rect.width - playerWidth;
-
-  player.style.left = `${newX}px`;
-}
-
-gameContainer.addEventListener("touchmove", (e) => {
-  const touch = e.touches[0];
-  movePlayer(touch.clientX);
+// Управление свайпами (влево/вправо)
+let touchStartX = 0;
+document.addEventListener("touchstart", e => {
+  touchStartX = e.touches[0].clientX;
+});
+document.addEventListener("touchmove", e => {
+  if (!gameRunning) return;
+  let touchX = e.touches[0].clientX;
+  let deltaX = touchX - touchStartX;
+  playerX += deltaX;
+  if (playerX < 0) playerX = 0;
+  if (playerX > window.innerWidth - 90) playerX = window.innerWidth - 90;
+  player.style.left = `${playerX}px`;
+  touchStartX = touchX;
 });
 
-// Появление бутылок
+// Создание падающей бутылки
 function spawnBottle() {
-  if (isGameOver) return;
-
   const bottle = document.createElement("div");
-  bottle.className = "bottle";
-  bottle.style.left = `${Math.random() * (gameContainer.offsetWidth - 60)}px`;
-  bottle.style.top = `-60px`;
-  gameContainer.appendChild(bottle);
+  bottle.classList.add("bottle");
+  bottle.style.left = `${Math.random() * (window.innerWidth - 50)}px`;
+  container.appendChild(bottle);
 
-  let y = -60;
-  const fallSpeed = 3 + Math.random() * 3;
-
-  const interval = setInterval(() => {
-    if (isGameOver) {
-      bottle.remove();
-      clearInterval(interval);
-      return;
-    }
-
-    y += fallSpeed;
-    bottle.style.top = `${y}px`;
+  let top = 0;
+  const fallInterval = setInterval(() => {
+    if (!gameRunning) return clearInterval(fallInterval);
+    top += 4;
+    bottle.style.top = `${top}px`;
 
     const bottleRect = bottle.getBoundingClientRect();
     const playerRect = player.getBoundingClientRect();
 
+    // Столкновение
     if (
-      y > gameContainer.offsetHeight - 120 &&
+      bottleRect.bottom > playerRect.top &&
       bottleRect.left < playerRect.right &&
       bottleRect.right > playerRect.left
     ) {
       score++;
-      scoreLabel.textContent = `Баллы: ${score}`;
-      bottle.remove();
-      clearInterval(interval);
+      scoreDisplay.innerText = `Баллы: ${score}`;
+      container.removeChild(bottle);
+      clearInterval(fallInterval);
 
       if (score >= 10) {
-        endGame();
+        gameRunning = false;
+        finalScore.innerText = `Вы набрали ${score} баллов! 🎉`;
+        finish.style.display = "block";
       }
     }
 
-    if (y > gameContainer.offsetHeight) {
-      bottle.remove();
-      clearInterval(interval);
+    // Пропуск бутылки
+    if (top > window.innerHeight) {
+      container.removeChild(bottle);
+      clearInterval(fallInterval);
     }
   }, 16);
 }
 
-function startGame() {
-  score = 0;
-  isGameOver = false;
-  scoreLabel.textContent = `Баллы: 0`;
-  finishScreen.style.display = "none";
-
-  const gameInterval = setInterval(() => {
-    if (isGameOver) clearInterval(gameInterval);
-    else spawnBottle();
-  }, 900);
+// Цикл падения бутылок
+function startGameLoop() {
+  const bottleInterval = setInterval(() => {
+    if (!gameRunning) return clearInterval(bottleInterval);
+    spawnBottle();
+  }, 1200);
 }
 
-function endGame() {
-  isGameOver = true;
-  finalScoreText.textContent = `Вы набрали ${score} баллов`;
-  finishScreen.style.display = "block";
-}
+startGameLoop();
 
 function sendResult() {
-  Telegram.WebApp.sendData(JSON.stringify({ score }));
-  Telegram.WebApp.close();
+  Telegram.WebApp.close(); // закрыть игру
 }
-
-startGame();
