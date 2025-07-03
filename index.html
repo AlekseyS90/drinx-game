@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Игра DRINX</title>
   <style>
+    /* Стили остаются без изменений */
     html, body {
       margin: 0;
       padding: 0;
@@ -43,6 +44,15 @@
       background-repeat: no-repeat;
     }
 
+    .bomb {
+      position: absolute;
+      width: 50px;
+      height: 70px;
+      background-image: url('bomb.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+    }
+
     #score {
       position: absolute;
       top: 10px;
@@ -77,6 +87,16 @@
       border: none;
       border-radius: 6px;
     }
+
+    /* Стиль для анимации взрыва */
+    #explosion {
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      background-image: url('explosion.png');
+      background-size: cover;
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -87,10 +107,16 @@
       <div id="final-score">Вы набрали 0 баллов</div>
       <button id="send-btn">Отправить</button>
     </div>
+    <!-- Элемент для анимации взрыва -->
+    <div id="explosion"></div>
   </div>
 
+  <!-- Аудиофайлы -->
+  <audio id="bottleSound" src="bottle_sound.mp3"></audio>
+  <audio id="explosionSound" src="explosion_sound.mp3"></audio>
+
   <!-- Telegram SDK -->
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="https://telegram.org/js/telegram-web-app.js "></script>
 
   <!-- Game Logic -->
   <script src="script.js"></script>
