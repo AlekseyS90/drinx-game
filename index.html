@@ -2,32 +2,91 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <title>DRINX Game</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Игра DRINX</title>
   <style>
-    body, html { margin: 0; padding: 0; overflow: hidden; background: #f4f4f4; font-family: sans-serif; }
-    #game { position: relative; width: 100%; height: 100vh; background: #fffbe6; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #f7f3ef;
+      font-family: sans-serif;
+      overflow: hidden;
+      height: 100%;
+      width: 100%;
+    }
+
+    #game-container {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    #player {
+      position: absolute;
+      bottom: 20px;
+      width: 80px;
+      height: 80px;
+      background-image: url('https://cdn-icons-png.flaticon.com/512/2738/2738757.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
     .bottle {
       position: absolute;
-      width: 30px;
-      height: 60px;
-      background: url('https://i.imgur.com/YOUR_BOTTLE_IMAGE.png') no-repeat center;
+      width: 50px;
+      height: 50px;
+      background-image: url('https://cdn-icons-png.flaticon.com/512/135/135620.png');
       background-size: contain;
+      background-repeat: no-repeat;
     }
+
     #score {
       position: absolute;
       top: 10px;
       left: 10px;
-      font-size: 18px;
-      background: #fff;
+      font-size: 20px;
+      background: rgba(255,255,255,0.8);
       padding: 5px 10px;
-      border-radius: 6px;
+      border-radius: 10px;
     }
+
+    #finish {
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 22px;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      display: none;
+      text-align: center;
+    }
+
+    #finish button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background: #aa0000;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+
   </style>
 </head>
 <body>
-  <div id="game">
+  <div id="game-container">
     <div id="score">Баллы: 0</div>
+    <div id="player"></div>
+    <div id="finish">
+      Игра окончена!<br />
+      <span id="final-score"></span><br />
+      <button onclick="sendResult()">Отправить результат</button>
+    </div>
   </div>
   <script src="script.js"></script>
 </body>
