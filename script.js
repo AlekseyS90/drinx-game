@@ -102,7 +102,7 @@ function spawnItem() {
       } else {
         // Сбор бутылки
         score++;
-        scoreBar.innerText = `Бутылки: ${score}`; // Обновляем счетчик
+        scoreBar.innerText = `Баллы: ${score}`; // Обновляем счетчик
         bottleSound.play(); // Воспроизводим звук сбора бутылки
 
         if (score >= 10) {
@@ -134,7 +134,7 @@ startGameLoop();
 retryBtn.addEventListener("click", () => {
   // Обнуляем игру
   score = 0;
-  scoreBar.innerText = "Бутылки: 0";
+  scoreBar.innerText = "Баллы: 0";
   finish.style.display = "none";
   sendBtn.style.display = "block"; // Восстанавливаем кнопку "Отправить"
   retryBtn.style.display = "none";
