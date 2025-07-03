@@ -23,15 +23,8 @@ const bottleImages = [
 const bottleSound = document.getElementById("bottleSound");
 const explosionSound = document.getElementById("explosionSound");
 
-// === Свайп ===
-let touchStartX = 0;
-document.addEventListener("touchstart", e => {
-  touchStartX = e.touches[0].clientX;
-});
-document.addEventListener("touchmove", e => {
-  if (!gameRunning) return;
-  let touchX = e.touches[0].clientX;
-  let deltaX = touchX - touchStartX;
+// === Функция для движения пакета ===
+function movePlayer(deltaX) {
   playerX += deltaX;
 
   // Ограничиваем движение пакета внутри экрана
@@ -39,7 +32,50 @@ document.addEventListener("touchmove", e => {
   if (playerX > window.innerWidth - player.offsetWidth) playerX = window.innerWidth - player.offsetWidth;
 
   player.style.left = `${playerX}px`;
-  touchStartX = touchX;
+}
+
+// === Свайп/Перемещение пакета (для мобильных устройств) ===
+let startX = 0;
+
+document.addEventListener("touchstart", e => {
+  startX = e.touches[0].clientX;
+});
+document.addEventListener("touchmove", e => {
+  if (!gameRunning) return;
+  let touchX = e.touches[0].clientX;
+  let deltaX = touchX - startX;
+  movePlayer(deltaX);
+  startX = touchX;
+});
+
+// === Перемещение пакета с помощью мыши (для ПК) ===
+document.addEventListener("mousedown", e => {
+  startX = e.clientX;
+});
+document.addEventListener("mousemove", e => {
+  if (!gameRunning) return;
+  let mouseX = e.clientX;
+  let deltaX = mouseX - startX;
+  movePlayer(deltaX);
+  startX = mouseX;
+});
+
+// === Перемещение пакета с помощью клавиш со стрелками ===
+document.addEventListener("keydown", e => {
+  if (!gameRunning) return;
+
+  let deltaX = 0;
+
+  switch (e.key) {
+    case "ArrowLeft":
+      deltaX = -10; // Сдвиг влево
+      break;
+    case "ArrowRight":
+      deltaX = 10; // Сдвиг вправо
+      break;
+  }
+
+  movePlayer(deltaX);
 });
 
 // === Падающая бутылка и бомба ===
