@@ -7,7 +7,6 @@ const finalScoreText = document.getElementById("final-score");
 let score = 0;
 let isGameOver = false;
 
-// Инициализация Telegram WebApp
 Telegram.WebApp.ready();
 
 function movePlayer(x) {
@@ -26,44 +25,41 @@ gameContainer.addEventListener("touchmove", (e) => {
   movePlayer(touch.clientX);
 });
 
-// Создание бутылок
+// Появление бутылок
 function spawnBottle() {
   if (isGameOver) return;
 
   const bottle = document.createElement("div");
-  bottle.classList.add("bottle");
-  const maxX = gameContainer.offsetWidth - 50;
-  const x = Math.floor(Math.random() * maxX);
-  bottle.style.left = `${x}px`;
+  bottle.className = "bottle";
+  bottle.style.left = `${Math.random() * (gameContainer.offsetWidth - 60)}px`;
   bottle.style.top = `-60px`;
   gameContainer.appendChild(bottle);
 
   let y = -60;
-  const speed = 3 + Math.random() * 2;
+  const fallSpeed = 3 + Math.random() * 3;
 
-  const fall = setInterval(() => {
+  const interval = setInterval(() => {
     if (isGameOver) {
-      clearInterval(fall);
       bottle.remove();
+      clearInterval(interval);
       return;
     }
 
-    y += speed;
+    y += fallSpeed;
     bottle.style.top = `${y}px`;
 
-    const playerRect = player.getBoundingClientRect();
     const bottleRect = bottle.getBoundingClientRect();
+    const playerRect = player.getBoundingClientRect();
 
-    // Столкновение
     if (
-      y > gameContainer.offsetHeight - 100 &&
+      y > gameContainer.offsetHeight - 120 &&
       bottleRect.left < playerRect.right &&
       bottleRect.right > playerRect.left
     ) {
       score++;
       scoreLabel.textContent = `Баллы: ${score}`;
-      clearInterval(fall);
       bottle.remove();
+      clearInterval(interval);
 
       if (score >= 10) {
         endGame();
@@ -71,8 +67,8 @@ function spawnBottle() {
     }
 
     if (y > gameContainer.offsetHeight) {
-      clearInterval(fall);
       bottle.remove();
+      clearInterval(interval);
     }
   }, 16);
 }
@@ -81,14 +77,12 @@ function startGame() {
   score = 0;
   isGameOver = false;
   scoreLabel.textContent = `Баллы: 0`;
+  finishScreen.style.display = "none";
 
-  const interval = setInterval(() => {
-    if (isGameOver) {
-      clearInterval(interval);
-    } else {
-      spawnBottle();
-    }
-  }, 800);
+  const gameInterval = setInterval(() => {
+    if (isGameOver) clearInterval(gameInterval);
+    else spawnBottle();
+  }, 900);
 }
 
 function endGame() {
