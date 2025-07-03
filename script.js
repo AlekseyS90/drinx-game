@@ -4,6 +4,7 @@ const scoreDisplay = document.getElementById("score");
 const finish = document.getElementById("finish");
 const finalScore = document.getElementById("final-score");
 const sendBtn = document.getElementById("send-btn");
+const retryBtn = document.getElementById("retry-btn"); // Новая кнопка "Попробовать еще раз"
 const explosionElement = document.getElementById("explosion");
 
 let score = 0;
@@ -79,6 +80,7 @@ function spawnItem() {
         finalScore.innerText = "Вы взорвались! 💥";
         finish.style.display = "block";
         sendBtn.disabled = true; // деактивируем кнопку
+        retryBtn.style.display = "block"; // показываем кнопку "Попробовать еще раз"
 
         // Проигрышная анимация
         explosionElement.style.display = "block";
@@ -122,6 +124,24 @@ function startGameLoop() {
 }
 
 startGameLoop();
+
+// === Перезапуск игры ===
+retryBtn.addEventListener("click", () => {
+  // Обнуляем игру
+  score = 0;
+  scoreDisplay.innerText = "Баллы: 0";
+  finish.style.display = "none";
+  sendBtn.disabled = true;
+  retryBtn.style.display = "none";
+  gameRunning = true;
+
+  // Удаляем все текущие объекты
+  const items = container.querySelectorAll(".item");
+  items.forEach(item => container.removeChild(item));
+
+  // Запускаем игру заново
+  startGameLoop();
+});
 
 // === Отправка результата ===
 sendBtn.addEventListener("click", () => {
