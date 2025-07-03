@@ -64,6 +64,7 @@ function spawnBottle() {
         gameRunning = false;
         finalScore.innerText = `Вы набрали ${score} баллов! 🎉`;
         finish.style.display = "block";
+        sendBtn.disabled = false; // Активируем кнопку "Отправить"
       }
     }
 
@@ -85,12 +86,20 @@ startGameLoop();
 
 // === Отправка результата ===
 sendBtn.addEventListener("click", () => {
+  // Получаем текущее значение счетчика из DOM
+  const finalScoreValue = parseInt(scoreDisplay.innerText.replace(/\D+/g, ''), 10);
+
+  if (isNaN(finalScoreValue) || finalScoreValue < 10) {
+    alert("Вы должны набрать минимум 10 баллов!");
+    return;
+  }
+
   if (typeof Telegram === "undefined" || !Telegram.WebApp) {
     alert("❌ Telegram WebApp не инициализирован.");
     return;
   }
 
-  Telegram.WebApp.ready(); // на всякий случай
-  Telegram.WebApp.sendData(`drinx_game_result:${score}`);
+  Telegram.WebApp.ready(); // На всякий случай
+  Telegram.WebApp.sendData(`drinx_game_result:${finalScoreValue}`);
   Telegram.WebApp.close();
 });
