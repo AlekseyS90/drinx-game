@@ -33,8 +33,11 @@ document.addEventListener("touchmove", e => {
   let touchX = e.touches[0].clientX;
   let deltaX = touchX - touchStartX;
   playerX += deltaX;
+
+  // Ограничиваем движение пакета внутри экрана
   if (playerX < 0) playerX = 0;
   if (playerX > window.innerWidth - 90) playerX = window.innerWidth - 90;
+
   player.style.left = `${playerX}px`;
   touchStartX = touchX;
 });
@@ -58,9 +61,11 @@ function spawnItem() {
   container.appendChild(item);
 
   let top = 0;
+  let fallSpeed = Math.random() * 3 + 3; // Случайная скорость от 3 до 6
+
   const fallInterval = setInterval(() => {
     if (!gameRunning) return clearInterval(fallInterval);
-    top += 4;
+    top += fallSpeed;
     item.style.top = `${top}px`;
 
     const itemRect = item.getBoundingClientRect();
