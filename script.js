@@ -88,5 +88,6 @@ function startGameLoop() {
 startGameLoop();
 
 function sendResult() {
-  Telegram.WebApp.close();
+  Telegram.WebApp.sendData("drinx_game_result:10"); // 10 — это набранные баллы
+  Telegram.WebApp.close(); // Закрыть игру
 }
