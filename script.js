@@ -4,6 +4,7 @@ const scoreDisplay = document.getElementById("score");
 const finish = document.getElementById("finish");
 const finalScore = document.getElementById("final-score");
 const sendBtn = document.getElementById("send-btn");
+const explosionElement = document.getElementById("explosion");
 
 let score = 0;
 let gameRunning = true;
@@ -16,6 +17,10 @@ const bottleImages = [
   'bottle4.png',
   'bottle5.png'
 ];
+
+// Аудиоэлементы
+const bottleSound = document.getElementById("bottleSound");
+const explosionSound = document.getElementById("explosionSound");
 
 // === Свайп ===
 let touchStartX = 0;
@@ -42,7 +47,7 @@ function spawnItem() {
 
   if (isBomb) {
     item.classList.add("bomb");
-    item.style.backgroundImage = "url('bomb.png')"; // убедись, что файл bomb.png существует
+    item.style.backgroundImage = "url('bomb.png')"; // убедитесь, что файл bomb.png существует
   } else {
     item.classList.add("bottle");
     item.style.backgroundImage = `url('${bottleImages[Math.floor(Math.random() * bottleImages.length)]}')`;
@@ -69,13 +74,30 @@ function spawnItem() {
       clearInterval(fallInterval);
 
       if (isBomb) {
+        // Взрыв
         gameRunning = false;
         finalScore.innerText = "Вы взорвались! 💥";
         finish.style.display = "block";
         sendBtn.disabled = true; // деактивируем кнопку
+
+        // Проигрышная анимация
+        explosionElement.style.display = "block";
+        explosionElement.style.left = `${playerRect.left + playerRect.width / 2 - 100}px`;
+        explosionElement.style.top = `${playerRect.top - 100}px`;
+
+        // Воспроизводим звук взрыва
+        explosionSound.play();
+
+        // Скрываем анимацию через 1 секунду
+        setTimeout(() => {
+          explosionElement.style.display = "none";
+        }, 1000);
       } else {
+        // Сбор бутылки
         score++;
         scoreDisplay.innerText = `Баллы: ${score}`;
+        bottleSound.play(); // Воспроизводим звук сбора бутылки
+
         if (score >= 10) {
           gameRunning = false;
           finalScore.innerText = `Вы набрали ${score} баллов! 🎉`;
