@@ -1,6 +1,6 @@
 const container = document.getElementById("game-container");
 const player = document.getElementById("player");
-const scoreDisplay = document.getElementById("score");
+const scoreBar = document.getElementById("score-bar"); // Обновлено на score-bar
 const finish = document.getElementById("finish");
 const finalScore = document.getElementById("final-score");
 const sendBtn = document.getElementById("send-btn");
@@ -79,8 +79,8 @@ function spawnItem() {
         gameRunning = false;
         finalScore.innerText = "Вы взорвались! 💥";
         finish.style.display = "block";
-        sendBtn.disabled = true; // деактивируем кнопку
-        retryBtn.style.display = "block"; // показываем кнопку "Попробовать еще раз"
+        sendBtn.style.display = "none"; // Скрываем кнопку "Отправить"
+        retryBtn.style.display = "block"; // Показываем кнопку "Попробовать еще раз"
 
         // Проигрышная анимация
         explosionElement.style.display = "block";
@@ -97,12 +97,12 @@ function spawnItem() {
       } else {
         // Сбор бутылки
         score++;
-        scoreDisplay.innerText = `Баллы: ${score}`;
+        scoreBar.innerText = `Баллы: ${score}`; // Обновляем счетчик
         bottleSound.play(); // Воспроизводим звук сбора бутылки
 
         if (score >= 10) {
           gameRunning = false;
-          finalScore.innerText = `Вы набрали ${score} баллов! 🎉`;
+          finalScore.innerText = "Вы собрали 10 бутылок! Получить подарок.";
           finish.style.display = "block";
           sendBtn.disabled = false;
         }
@@ -129,9 +129,9 @@ startGameLoop();
 retryBtn.addEventListener("click", () => {
   // Обнуляем игру
   score = 0;
-  scoreDisplay.innerText = "Баллы: 0";
+  scoreBar.innerText = "Баллы: 0";
   finish.style.display = "none";
-  sendBtn.disabled = true;
+  sendBtn.style.display = "block"; // Восстанавливаем кнопку "Отправить"
   retryBtn.style.display = "none";
   gameRunning = true;
 
@@ -145,7 +145,7 @@ retryBtn.addEventListener("click", () => {
 
 // === Отправка результата ===
 sendBtn.addEventListener("click", () => {
-  const finalScoreValue = parseInt(scoreDisplay.innerText.replace(/\D+/g, ''), 10);
+  const finalScoreValue = parseInt(scoreBar.innerText.replace(/\D+/g, ''), 10);
 
   if (isNaN(finalScoreValue) || finalScoreValue < 10) {
     alert("Вы должны набрать минимум 10 баллов!");
