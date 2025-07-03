@@ -33,52 +33,69 @@ document.addEventListener("touchmove", e => {
   touchStartX = touchX;
 });
 
-// === Падающая бутылка ===
-function spawnBottle() {
-  const bottle = document.createElement("div");
-  bottle.classList.add("bottle");
-  bottle.style.backgroundImage = `url('${bottleImages[Math.floor(Math.random() * bottleImages.length)]}')`;
-  bottle.style.left = `${Math.random() * (window.innerWidth - 50)}px`;
-  container.appendChild(bottle);
+// === Падающая бутылка и бомба ===
+function spawnItem() {
+  const item = document.createElement("div");
+  item.classList.add("item"); // общий класс для бутылок и бомб
+
+  const isBomb = Math.random() < 0.2; // 20% шанс появления бомбы
+
+  if (isBomb) {
+    item.classList.add("bomb");
+    item.style.backgroundImage = "url('bomb.png')"; // убедись, что файл bomb.png существует
+  } else {
+    item.classList.add("bottle");
+    item.style.backgroundImage = `url('${bottleImages[Math.floor(Math.random() * bottleImages.length)]}')`;
+  }
+
+  item.style.left = `${Math.random() * (window.innerWidth - 50)}px`;
+  container.appendChild(item);
 
   let top = 0;
   const fallInterval = setInterval(() => {
     if (!gameRunning) return clearInterval(fallInterval);
     top += 4;
-    bottle.style.top = `${top}px`;
+    item.style.top = `${top}px`;
 
-    const bottleRect = bottle.getBoundingClientRect();
+    const itemRect = item.getBoundingClientRect();
     const playerRect = player.getBoundingClientRect();
 
     if (
-      bottleRect.bottom > playerRect.top &&
-      bottleRect.left < playerRect.right &&
-      bottleRect.right > playerRect.left
+      itemRect.bottom > playerRect.top &&
+      itemRect.left < playerRect.right &&
+      itemRect.right > playerRect.left
     ) {
-      score++;
-      scoreDisplay.innerText = `Баллы: ${score}`;
-      container.removeChild(bottle);
+      container.removeChild(item);
       clearInterval(fallInterval);
 
-      if (score >= 10) {
+      if (isBomb) {
         gameRunning = false;
-        finalScore.innerText = `Вы набрали ${score} баллов! 🎉`;
+        finalScore.innerText = "Вы взорвались! 💥";
         finish.style.display = "block";
-        sendBtn.disabled = false; // Активируем кнопку "Отправить"
+        sendBtn.disabled = true; // деактивируем кнопку
+      } else {
+        score++;
+        scoreDisplay.innerText = `Баллы: ${score}`;
+        if (score >= 10) {
+          gameRunning = false;
+          finalScore.innerText = `Вы набрали ${score} баллов! 🎉`;
+          finish.style.display = "block";
+          sendBtn.disabled = false;
+        }
       }
     }
 
     if (top > window.innerHeight) {
-      container.removeChild(bottle);
+      container.removeChild(item);
       clearInterval(fallInterval);
     }
   }, 16);
 }
 
 function startGameLoop() {
-  const bottleInterval = setInterval(() => {
-    if (!gameRunning) return clearInterval(bottleInterval);
-    spawnBottle();
+  const itemInterval = setInterval(() => {
+    if (!gameRunning) return clearInterval(itemInterval);
+    spawnItem();
   }, 1200);
 }
 
@@ -86,7 +103,6 @@ startGameLoop();
 
 // === Отправка результата ===
 sendBtn.addEventListener("click", () => {
-  // Получаем текущее значение счетчика из DOM
   const finalScoreValue = parseInt(scoreDisplay.innerText.replace(/\D+/g, ''), 10);
 
   if (isNaN(finalScoreValue) || finalScoreValue < 10) {
@@ -99,7 +115,7 @@ sendBtn.addEventListener("click", () => {
     return;
   }
 
-  Telegram.WebApp.ready(); // На всякий случай
+  Telegram.WebApp.ready(); // на всякий случай
   Telegram.WebApp.sendData(`drinx_game_result:${finalScoreValue}`);
   Telegram.WebApp.close();
 });
