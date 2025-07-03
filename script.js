@@ -23,34 +23,15 @@ const bottleImages = [
 const bottleSound = document.getElementById("bottleSound");
 const explosionSound = document.getElementById("explosionSound");
 
-// === Свайп/Перемещение пакета ===
-let startX = 0;
-
-// Для мобильных устройств (сенсорный ввод)
+// === Свайп ===
+let touchStartX = 0;
 document.addEventListener("touchstart", e => {
-  startX = e.touches[0].clientX;
+  touchStartX = e.touches[0].clientX;
 });
 document.addEventListener("touchmove", e => {
   if (!gameRunning) return;
   let touchX = e.touches[0].clientX;
-  let deltaX = touchX - startX;
-  movePlayer(deltaX);
-  startX = touchX;
-});
-
-// Для ПК (мышь)
-document.addEventListener("mousedown", e => {
-  startX = e.clientX;
-});
-document.addEventListener("mousemove", e => {
-  if (!gameRunning) return;
-  let mouseX = e.clientX;
-  let deltaX = mouseX - startX;
-  movePlayer(deltaX);
-  startX = mouseX;
-});
-
-function movePlayer(deltaX) {
+  let deltaX = touchX - touchStartX;
   playerX += deltaX;
 
   // Ограничиваем движение пакета внутри экрана
@@ -58,7 +39,8 @@ function movePlayer(deltaX) {
   if (playerX > window.innerWidth - player.offsetWidth) playerX = window.innerWidth - player.offsetWidth;
 
   player.style.left = `${playerX}px`;
-}
+  touchStartX = touchX;
+});
 
 // === Падающая бутылка и бомба ===
 function spawnItem() {
@@ -120,7 +102,7 @@ function spawnItem() {
       } else {
         // Сбор бутылки
         score++;
-        scoreBar.innerText = `Баллы: ${score}`; // Обновляем счетчик
+        scoreBar.innerText = `Бутылки: ${score}`; // Обновляем счетчик
         bottleSound.play(); // Воспроизводим звук сбора бутылки
 
         if (score >= 10) {
@@ -152,7 +134,7 @@ startGameLoop();
 retryBtn.addEventListener("click", () => {
   // Обнуляем игру
   score = 0;
-  scoreBar.innerText = "Баллы: 0";
+  scoreBar.innerText = "Бутылки: 0";
   finish.style.display = "none";
   sendBtn.style.display = "block"; // Восстанавливаем кнопку "Отправить"
   retryBtn.style.display = "none";
