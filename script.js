@@ -9,7 +9,7 @@ const explosionElement = document.getElementById("explosion");
 
 let score = 0;
 let gameRunning = true;
-let playerX = window.innerWidth / 2 - 45;
+let playerX = window.innerWidth / 2 - player.offsetWidth / 2; // Центрируем пакет
 
 const bottleImages = [
   'bottle1.png',
@@ -23,24 +23,42 @@ const bottleImages = [
 const bottleSound = document.getElementById("bottleSound");
 const explosionSound = document.getElementById("explosionSound");
 
-// === Свайп ===
-let touchStartX = 0;
+// === Свайп/Перемещение пакета ===
+let startX = 0;
+
+// Для мобильных устройств (сенсорный ввод)
 document.addEventListener("touchstart", e => {
-  touchStartX = e.touches[0].clientX;
+  startX = e.touches[0].clientX;
 });
 document.addEventListener("touchmove", e => {
   if (!gameRunning) return;
   let touchX = e.touches[0].clientX;
-  let deltaX = touchX - touchStartX;
+  let deltaX = touchX - startX;
+  movePlayer(deltaX);
+  startX = touchX;
+});
+
+// Для ПК (мышь)
+document.addEventListener("mousedown", e => {
+  startX = e.clientX;
+});
+document.addEventListener("mousemove", e => {
+  if (!gameRunning) return;
+  let mouseX = e.clientX;
+  let deltaX = mouseX - startX;
+  movePlayer(deltaX);
+  startX = mouseX;
+});
+
+function movePlayer(deltaX) {
   playerX += deltaX;
 
   // Ограничиваем движение пакета внутри экрана
   if (playerX < 0) playerX = 0;
-  if (playerX > window.innerWidth - 90) playerX = window.innerWidth - 90;
+  if (playerX > window.innerWidth - player.offsetWidth) playerX = window.innerWidth - player.offsetWidth;
 
   player.style.left = `${playerX}px`;
-  touchStartX = touchX;
-});
+}
 
 // === Падающая бутылка и бомба ===
 function spawnItem() {
