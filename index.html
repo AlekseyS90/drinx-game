@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Игра DRINX</title>
   <style>
-    /* Стили общего дизайна */
+    /* Стили остаются без изменений */
     html, body {
       margin: 0;
       padding: 0;
@@ -109,6 +109,9 @@
 </head>
 <body>
   <div id="game-container">
+    <!-- Логотип винотеки -->
+    <div class="logo"></div>
+
     <!-- Новая строка с баллами -->
     <div id="score-bar">Баллы: 0</div>
 
@@ -124,6 +127,7 @@
   <div id="explosion"></div>
 
   <!-- Аудиофайлы -->
+  <audio id="backgroundMusic" src="background_music.mp3" loop autoplay></audio>
   <audio id="bottleSound" src="bottle_sound.mp3"></audio>
   <audio id="explosionSound" src="explosion_sound.mp3"></audio>
 
