@@ -8,7 +8,16 @@ let score = 0;
 let gameRunning = true;
 let playerX = window.innerWidth / 2 - 45;
 
-// Управление свайпами (влево/вправо)
+// Путь к бутылкам
+const bottleImages = [
+  'bottle1.png',
+  'bottle2.png',
+  'bottle3.png',
+  'bottle4.png',
+  'bottle5.png'
+];
+
+// Управление свайпами
 let touchStartX = 0;
 document.addEventListener("touchstart", e => {
   touchStartX = e.touches[0].clientX;
@@ -28,6 +37,11 @@ document.addEventListener("touchmove", e => {
 function spawnBottle() {
   const bottle = document.createElement("div");
   bottle.classList.add("bottle");
+
+  // Случайная картинка бутылки
+  const img = bottleImages[Math.floor(Math.random() * bottleImages.length)];
+  bottle.style.backgroundImage = `url('${img}')`;
+
   bottle.style.left = `${Math.random() * (window.innerWidth - 50)}px`;
   container.appendChild(bottle);
 
@@ -40,7 +54,6 @@ function spawnBottle() {
     const bottleRect = bottle.getBoundingClientRect();
     const playerRect = player.getBoundingClientRect();
 
-    // Столкновение
     if (
       bottleRect.bottom > playerRect.top &&
       bottleRect.left < playerRect.right &&
@@ -58,7 +71,6 @@ function spawnBottle() {
       }
     }
 
-    // Пропуск бутылки
     if (top > window.innerHeight) {
       container.removeChild(bottle);
       clearInterval(fallInterval);
@@ -66,7 +78,6 @@ function spawnBottle() {
   }, 16);
 }
 
-// Цикл падения бутылок
 function startGameLoop() {
   const bottleInterval = setInterval(() => {
     if (!gameRunning) return clearInterval(bottleInterval);
@@ -77,5 +88,5 @@ function startGameLoop() {
 startGameLoop();
 
 function sendResult() {
-  Telegram.WebApp.close(); // закрыть игру
+  Telegram.WebApp.close();
 }
